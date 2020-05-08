@@ -2,6 +2,7 @@
 
 import sys
 from video import *
+from segment import *
 
 inPath = ''
 outPath = ''
@@ -11,10 +12,14 @@ def parsInput():
 	global inPath
 	global outPath
 
-	if len(sys.argv) != 3:
-		raise ValueError("Bad input syntax, use : python3 main.py inPath outPath")
-	inPath = sys.argv[1]
-	outPath = sys.argv[2]
+	if len(sys.argv) == 3 :
+		inPath = sys.argv[1]
+		outPath = sys.argv[2]
+	elif len(sys.argv) == 1 :
+		inPath = "../data/robot_parcours_1.avi"
+		outPath = "../data/robot_parcours_1_out.avi"
+	else :
+		raise ValueError("Bad input syntax, use : python3 main.py OR python3 main.py inPath outPath")
 
 
 def main():
@@ -22,7 +27,7 @@ def main():
 
 	imgs = video_load(inPath)
 
-	video_showFrame(imgs[20])
+	segment_getObj(imgs[0])
 
 
 
