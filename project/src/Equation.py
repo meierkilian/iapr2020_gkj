@@ -5,7 +5,7 @@ class Equation(object):
 	"""Keeps track of robot position an triggers symbol and digit classification when needd"""
 	# listObj is of form :
 	# listObj[i]["pos"] = (xi, yi)
-	# listObj[i].img = np.array() # 28x28 pixel binary
+	# listObj[i]["img"] = np.array() # 28x28 pixel binary
 
 
 	def __init__(self, listObj):
