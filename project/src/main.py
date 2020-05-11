@@ -4,6 +4,8 @@ import sys
 from video import *
 from segment import *
 import pickle
+from Equation import *
+
 
 inPath = ''
 outPath = ''
@@ -45,6 +47,25 @@ def main():
 	# Can be loaded using pickle and the following lines
 	# with open('../data/extractedImg.data', 'rb') as dataFile:
 	# 	listObj = pickle.load(dataFile)
+	# 	
+	
+	eq = Equation(listObj)
+
+	# Sample trajectory
+	listPos = (
+		(400,550),
+		(300,500),
+		(260,460), # 3
+		(230,410),
+		(210,360), # /
+		(260,330), 
+		(240,280), # 2
+		(180,280),
+		(100,290)  # =
+		)
+
+	for p in listPos :
+		print(eq.newRobPos(p))
  
 
 if __name__ == '__main__':

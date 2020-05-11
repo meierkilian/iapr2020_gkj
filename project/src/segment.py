@@ -41,7 +41,7 @@ bgmOffset = (0, 0)
 bgmExtent = (20, 20)
 #
 # If True intermediate images are displayed
-verbose = True
+verbose = False
 
 def getObjCenter(img) :
     x = []

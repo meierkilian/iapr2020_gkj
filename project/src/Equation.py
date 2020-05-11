@@ -15,7 +15,7 @@ class Equation(object):
 		self.equ = ""
 
 		self.listObj = listObj
-		self.areaInRad = 50 # max distance to symbol center to be considered over it
+		self.areaInRad = 30 # max distance to symbol center to be considered over it
 		self.areaOutRad = self.areaInRad + 10 # min distance away from symbol to be conisderd outside (histeresis)
 
 
@@ -36,13 +36,13 @@ class Equation(object):
 
 			if self.inside : #got inside
 				if self.prevDigit :
-					symb = classify_getSymbol(self.currentObj["img"])
+					symb = classify_getSymbol(self.currentObj["img"], self.currentObj["label"])
 					res = ''
 					if symb == '=' : res = str(eval(self.equ))
 					self.equ = ''.join([self.equ, symb, res])
 					self.prevDigit = False
 				else :
-					self.equ = ''.join([self.equ, classify_getDigit(self.currentObj["img"])])
+					self.equ = ''.join([self.equ, classify_getDigit(self.currentObj["img"], self.currentObj["label"])])
 					self.prevDigit = True
 
 		return self.equ

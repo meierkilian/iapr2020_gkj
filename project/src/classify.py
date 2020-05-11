@@ -1,8 +1,7 @@
-from random import choice
 
-def classify_getDigit(img):
-	return choice('012345678')
+def classify_getDigit(img, label):
+	return label
 
 
-def classify_getSymbol(img):
-	return choice('+-*/=')
+def classify_getSymbol(img, label):
+	return label
