@@ -1,3 +1,7 @@
+#======================================================================
+# IMPORT
+#======================================================================
+
 import tarfile
 import os
 import numpy as np
@@ -6,10 +10,15 @@ import matplotlib.pyplot as plt
 # NEW ====
 import imageio #to load png pictures
 import pickle  #to load .data file
+import warnings 
 
-#method 1 :
+# OPEN CV FUNCTIONS
+import cv2 # tested using version 4.1.2
+
+# SKIMAGE FUNCTIONS
 import skimage.io
 from skimage import img_as_ubyte
+# from skimage.util import img_as_ubyte
 from skimage import filters
 from skimage.color import rgb2gray
 from skimage.color import rgba2rgb
@@ -25,35 +34,32 @@ from skimage.morphology import opening
 from skimage.morphology import rectangle
 from skimage.morphology import area_closing
 from skimage.morphology import area_opening
-
 from skimage.draw import rectangle
 #from skimage.draw import circle
 from skimage.measure import label
-
-
+from skimage.measure import perimeter
 from skimage.segmentation import watershed
 from skimage.segmentation import active_contour
-
-#method 2 :
-# from skimage.util import img_as_ubyte
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
-
-import warnings 
-import cv2 # tested using version 4.1.2
 #if cv2.__version__ != "4.1.2" :
 #  warnings.warn("OpenCV currently running version {}, developement version is 4.1.2".format(cv2.__version__))
+
+
+
 
 #======================================================================
 # To compute Fourier Descriptor
 #======================================================================
 ONE_OBJECT_SIGNS = (PLUS, MINUS, TIMES) = 0,2,4  #the index of the + - and * symbols
+#not useful anymore
+
+
 
 #======================================================================
 # To compute Fourier Descriptor
 #======================================================================
-
 
 def get_contour(im, methode = "AC") :
     """
@@ -111,10 +117,15 @@ def extract_fourier_descriptor(im, methode = "AC"):
       snake : order point list of the contour 
       im : filtered image used for contour search
     """
+    if type(im[0,0]) == np.bool_: #if picture is binary, convert it to CV_8UC1 type
+        im = np.copy(im.astype(np.uint8))
     
     im, snake = get_contour(im, methode)
     
     z = (snake[:,0] + 1j*snake[:,1]) #put the 2D points of the snake in a complex representation
+    #off = 0
+    #big_z = np.zeros(  off + (z.shape[0] + off)  )
+    #big_z[off:z.shape[0]+off] = z
     fd = np.fft.fft(z)
 
     return fd, snake, im 
@@ -131,44 +142,24 @@ def compute_feat_with_fourier_descriptor( pic, feat_n = 1 ):
     module/=module[0] #make it sclale invariant
     return module[feat_n],snake, im
 
+
 #======================================================================
 # To compute nb_objects per picture and total area of picture
 #======================================================================
 
-def compute_nb_objects(pic, thresh = 0.9, interval = 0.2):
+def compute_nb_objects(pic):
     """
-    return nb_object in the picture (background does NOT count as an object)
-    also return the total area of the objects
+    It returns the number of objects in the picture pic (background does NOT count as an object)
+    It also returns the total area of the objects (i.e. the sum of the area of each object, i.e. the area which is NOT background)
     
-    input : the picture is composed of pixel with values between 0 and 1 !!!
-    
+    input : The input picture must be a 2D binary numpy array ! 
     """
-    if pic.shape[-1] == 4:
-        im_gray = np.copy(rgb2gray(rgba2rgb(im)))
-    elif pic.shape[-1] == 3:
-        im_gray = np.copy(rgb2gray(pic))  # convert to grayscale
+    if pic.shape[-1] == 4 or pic.shape[-1] == 3:
+        print("\n Error : This picture is RGB or RBBA, hence NOT binary. Begone.")
     elif len(pic.shape) ==2: 
-        im_gray = np.copy(pic)
+        pass
     else:
-        "\n This picture is neither RBGA nor RGB nor greyscale"
+        print("\n Error : This picture is NOT binary. Begone.")
         
-    denoised = rank.median(img_as_ubyte(im_gray), disk(1))  #denoise image
-    # define markers for wateshed : one small rectagle to define background
-    # and markers where there is no background. The background is defined as an interval around the mean color of the image
-    markers = np.zeros_like(im_gray)
-    
-                    #!!! maybe use Kmeans to classify the pixels in two classes : background from symbols ? 
-    #thresh = 0.9    #!!! np.average(im_gray)
-    #interval = 0.2  #!!! to adjust probably !!!
-    markers[im_gray<thresh-interval] = 1
-    markers[im_gray>thresh+interval] = 1
-    area = np.sum(markers==1)
-    rr, cc = rectangle((0,0), extent=(20,20), shape=markers.shape) #maybe to adjust the shape too
-    markers[rr,cc] = 1    
-    markers = label(markers)
-
-    edge_sobel = filters.sobel(denoised)     # sobel edges
-    labels = watershed(edge_sobel, markers)  # perform the watershed
-
-    nb_obj = np.max(labels)-1
-    return nb_obj, area
+    labels = label(pic)
+    return np.amax(labels), np.sum(labels==True)
