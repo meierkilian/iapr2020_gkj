@@ -30,20 +30,39 @@ def main():
 
 	imgs = video_load(inPath)
 
-	listObj = segment_getObj(imgs[0])
-	listObj[0]["label"] = '2'
-	listObj[1]["label"] = '3'
-	listObj[2]["label"] = '*'
-	listObj[3]["label"] = '='
-	listObj[4]["label"] = '7'
-	listObj[5]["label"] = '7'
-	listObj[6]["label"] = '/'
-	listObj[7]["label"] = '2'
-	listObj[8]["label"] = '3'
-	listObj[9]["label"] = '+'
+	listListObj = []
+	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
+
+	for i in range(6) :
+		print("Iteration {}".format(i))
+		listObj = segment_getObj(imgs[i])
+		print("Nbr obj {}".format(len(listObj)))
+		for i in range(len(listObj)) :
+			if i in lbl :
+				listObj[i]["label"] = lbl[i]
+			else :
+				listObj[i]["label"] = "N/A"
+
+
+		listListObj.append(listObj)
+
+		fig, axes = plt.subplots(nrows=3, ncols=int(np.ceil(len(listObj)/3)), figsize=outputSize, \
+		sharex=True, sharey=True)
+
+		axes = axes.ravel()
+		
+		for obj, ax in zip(listObj, axes) :
+			ax.imshow(obj["img"], cmap=plt.cm.gray)
+			ax.set_title("Center\n {}\n Lbl : {}".format(obj["pos"], obj["label"]))
+			
+		for a in axes:
+			a.axis('off')
+
+		plt.show()
+
 	
-	with open('../data/extractedImg.data', 'wb') as dataFile:
-		pickle.dump(listObj, dataFile)
+	with open('../data/extractedImgBIG.data', 'wb') as dataFile:
+		pickle.dump(listListObj, dataFile)
 	# Can be loaded using pickle and the following lines
 	# with open('../data/extractedImg.data', 'rb') as dataFile:
 	# 	listObj = pickle.load(dataFile)

@@ -13,9 +13,10 @@ from skimage.transform import resize
 
 import numpy as np
 
-
-# im_gray = color.rgb2yuv(img)[:,:,2] NOTE red arrow is super nicely visible in this color space
-
+# TODO
+# im_gray = color.rgb2yuv(img)[:,:,1] NOTE red arrow is super nicely visible in this color space
+# increase border maybe ?
+# resize only using filling and no interpolation
 
 # PARAMATER LIST
 # 
@@ -34,7 +35,7 @@ outputSize = (28,28)
 #
 # If True all the symbols are rescaled to match outputSize, if False the images are cropped directly to outputSize,
 # this may result in different scale or symbol beeing outside of the image.
-adjustSize = True
+adjustSize = False
 # 
 # Background marker offset and extent notes the position and size of the marker disignating the brackground
 bgmOffset = (0, 0)
