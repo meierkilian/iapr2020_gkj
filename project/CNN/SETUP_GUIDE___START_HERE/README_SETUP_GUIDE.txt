@@ -9,7 +9,7 @@ python --version
 
 conda install -c anaconda keras-gpu             // or for CPU : conda install -c anaconda keras
 
-conda install -c conda-forge scikit-image
+conda install -c conda-forge scikit-image       // maybe this one is not necessary
 conda install --file install2.txt
 
 conda install jupyter notebook
