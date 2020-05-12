@@ -1,14 +1,14 @@
 import tarfile
 import os
+import skimage.io
+
 import numpy as np
 import matplotlib.pyplot as plt
 
-# NEW ====
-import imageio #to load png pictures
-import pickle  #to load .data file
+from PIL import Image #to write text on pictures
 
 #method 1 :
-import skimage.io
+import imageio #to load png pictures
 from skimage import img_as_ubyte
 from skimage import filters
 from skimage.color import rgb2gray
