@@ -25,11 +25,7 @@ def parsInput():
 		raise ValueError("Bad input syntax, use : python3 main.py OR python3 main.py inPath outPath")
 
 
-def main():
-	parsInput()
-
-	imgs = video_load(inPath)
-
+def saveData(imgs) :
 	listListObj = []
 	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
 
@@ -67,21 +63,39 @@ def main():
 	# with open('../data/extractedImg.data', 'rb') as dataFile:
 	# 	listObj = pickle.load(dataFile)
 	# 	
-	
+
+
+def main():
+	parsInput()
+
+	imgs = video_load(inPath)
+
+	#saveData(imgs)
+
+	listObj = segment_getObj(imgs[0])
+	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
+	for i in range(len(listObj)) :
+			if i in lbl :
+				listObj[i]["label"] = lbl[i]
+			else :
+				listObj[i]["label"] = "N/A"
+
+
 	eq = Equation(listObj)
+	listPos = segment_getArrow(imgs)
 
 	# Sample trajectory
-	listPos = (
-		(400,550),
-		(300,500),
-		(260,460), # 3
-		(230,410),
-		(210,360), # /
-		(260,330), 
-		(240,280), # 2
-		(180,280),
-		(100,290)  # =
-		)
+	# listPos = (
+	# 	(400,550),
+	# 	(300,500),
+	# 	(260,460), # 3
+	# 	(230,410),
+	# 	(210,360), # /
+	# 	(260,330), 
+	# 	(240,280), # 2
+	# 	(180,280),
+	# 	(100,290)  # =
+	# 	)
 
 	for p in listPos :
 		print(eq.newRobPos(p))
