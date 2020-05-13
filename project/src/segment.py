@@ -218,7 +218,7 @@ def segment_getArrow(video):
         i = i+1
 
     #print(arrow_pos) 
-    if True : #verbose:
+    if verbose :
         fig, ax = plt.subplots(1, 1, figsize=(12, 12))
         ax.set_xlim(0,720)
         ax.set_ylim(480,0)
