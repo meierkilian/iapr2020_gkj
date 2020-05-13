@@ -6,6 +6,7 @@ import tarfile
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 # NEW ====
 import imageio #to load png pictures
