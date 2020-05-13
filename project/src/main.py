@@ -58,7 +58,7 @@ def saveData(imgs) :
 		plt.show()
 
 	
-	with open('../data/extractedImgBIG.data', 'wb') as dataFile:
+	with open('../data/extractedImgBIG_Gray_withOUTSizeAdjust.data', 'wb') as dataFile:
 		pickle.dump(listListObj, dataFile)
 	# Can be loaded using pickle and the following lines
 	# with open('../data/extractedImg.data', 'rb') as dataFile:
@@ -71,8 +71,9 @@ def main():
 
 	imgsIn = video_load(inPath)
 
-	#saveData(imgsIn)
+	saveData(imgsIn)
 
+	return
 	listObj = segment_getObj(imgsIn[0])
 	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
 	for i in range(len(listObj)) :

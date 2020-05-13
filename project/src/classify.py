@@ -6,7 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle    #to load files
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis #to make prediction
+# 	from sklearn.discriminant_analysis import LinearDiscriminantAnalysis #to make prediction
 
 # OPEN CV FUNCTIONS : 
 import cv2 # tested using version 4.1.2
