@@ -167,3 +167,22 @@ def compute_nb_objects(pic):
 #           PLOT
 #======================================================================
 
+def plot_pic(list_pic, NB_COL = 0):
+    """ Plot a list of pictures """
+    if len(list_pic) > 10:
+        nb_col = 10
+        nb_row = int(len(list_pic)//6+1)
+    else:
+        nb_col = len(list_pic)
+        nb_row = 1
+    if NB_COL :
+      nb_col = NB_COL
+      nb_row = int(len(list_pic)//NB_COL+1)
+  
+    fig, axes = plt.subplots(nrows=nb_row, ncols=nb_col, figsize=(12, 12), sharex=True, sharey=True)
+    ax = axes.ravel()
+
+    for i in np.arange(len(list_pic)):
+        ax[i].imshow(list_pic[i])
+    for a in ax:
+        a.axis('off')
