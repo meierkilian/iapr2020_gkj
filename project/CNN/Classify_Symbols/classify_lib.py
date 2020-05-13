@@ -49,13 +49,11 @@ from sklearn.decomposition import PCA
 
 
 
-
 #======================================================================
 # To compute Fourier Descriptor
 #======================================================================
 ONE_OBJECT_SIGNS = (PLUS, MINUS, TIMES) = 0,2,4  #the index of the + - and * symbols
 #not useful anymore
-
 
 
 #======================================================================
