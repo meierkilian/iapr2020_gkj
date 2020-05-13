@@ -36,7 +36,7 @@ class Equation(object):
 
 			if self.inside : #got inside
 				if self.prevDigit :
-					symb = classify_getSymbol(self.currentObj["img"], self.currentObj["label"])
+					symb = classify_getSymbol(self.currentObj["img"])
 					res = ''
 					if symb == '=' : res = str(eval(self.equ))
 					self.equ = ''.join([self.equ, symb, res])
