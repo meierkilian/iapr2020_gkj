@@ -6,6 +6,7 @@ import cv2
 from cv2 import cvtColor
 import matplotlib.pyplot as plt
 from PIL import Image
+import os
 
 def video_load(path):
 	v = av.open(path)
@@ -47,14 +48,16 @@ def video_export(video_name, imgs, png_path, video_path):
     i = 0;
     for im in imgs:
         new_im = Image.fromarray(im)
-        new_im.save(png_path+"/"+"frame%d.png" % i)
+        new_im.save(png_path+"/"+"frame%.3d.png" % i)
         i = i+1
         
     #Boucle pour sauver la vidéo
     video_name = video_path+"/"+video_name+".avi"
     freq = 2
 
-    images = [img for img in os.listdir(png_path) if img.endswith(".png")]
+    listFrame = os.listdir(png_path)
+    listFrame.sort()
+    images = [img for img in listFrame if img.endswith(".png")]
     frame = cv2.imread(os.path.join(png_path, images[0]))
     height, width, layers = frame.shape
 
