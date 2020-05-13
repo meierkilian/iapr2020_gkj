@@ -144,7 +144,7 @@ def segment_getObj(img) :
         ax[2].imshow(labels, cmap=plt.cm.nipy_spectral, alpha=1)
         ax[2].set_title("Segmented")
         
-        ax[3].imshow(edge, cmap=plt.cm.gray, alpha=1)
+        ax[3].imshow(im_gray, cmap=plt.cm.gray, alpha=1)
         ax[3].set_title("Other")
         
 
@@ -164,18 +164,20 @@ def segment_getObj(img) :
         obj["pos"] = getObjCenter(labels == l)
         if adjustSize :
             r = int(np.round(getObjRadius(labels == l, obj["pos"]))*border)
-            imgResized = resize(cropCenter(labels == l, obj["pos"], r), outputSize, preserve_range = True)
-            try:
-                thresh = filters.threshold_otsu(imgResized)
-            except Exception as e:
-                print("Caugth except {}".format(e))
+            imgResized = resize(cropCenter(np.multiply(labels == l, 1 - im_gray), obj["pos"], r), outputSize, preserve_range = True)
+            # try:
+            #     thresh = filters.threshold_otsu(imgResized)
+            # except Exception as e:
+            #     print("Caugth except {}".format(e))
 
-            obj["img"] = imgResized > thresh
+            # obj["img"] = imgResized > thresh
+            obj["img"] = imgResized
         else :
-            obj["img"] = cropCenter(labels == l, obj["pos"], int(outputSize[0]/2))
+            obj["img"] = cropCenter(np.multiply(labels == l, 1 - im_gray), obj["pos"], int(outputSize[0]/2))
 
         listObj.append(obj)
 
+    
 
     if verbose :
         fig, axes = plt.subplots(nrows=3, ncols=int(np.ceil(len(listObj)/3)), figsize=outputSize, \
@@ -218,7 +220,7 @@ def segment_getArrow(video):
         i = i+1
 
     #print(arrow_pos) 
-    if True : #verbose:
+    if verbose :
         fig, ax = plt.subplots(1, 1, figsize=(12, 12))
         ax.set_xlim(0,720)
         ax.set_ylim(480,0)

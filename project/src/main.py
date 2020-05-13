@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
-import sys
 from video import *
 from segment import *
-import pickle
 from Equation import *
+from overlay import *
 
+import sys
+import pickle
 
 inPath = ''
 outPath = ''
@@ -57,7 +58,7 @@ def saveData(imgs) :
 		plt.show()
 
 	
-	with open('../data/extractedImgBIG.data', 'wb') as dataFile:
+	with open('../data/extractedImgBIG_Gray_withOUTSizeAdjust.data', 'wb') as dataFile:
 		pickle.dump(listListObj, dataFile)
 	# Can be loaded using pickle and the following lines
 	# with open('../data/extractedImg.data', 'rb') as dataFile:
@@ -68,11 +69,12 @@ def saveData(imgs) :
 def main():
 	parsInput()
 
-	imgs = video_load(inPath)
+	imgsIn = video_load(inPath)
 
-	#saveData(imgs)
+	saveData(imgsIn)
 
-	listObj = segment_getObj(imgs[0])
+	return
+	listObj = segment_getObj(imgsIn[0])
 	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
 	for i in range(len(listObj)) :
 			if i in lbl :
@@ -82,24 +84,18 @@ def main():
 
 
 	eq = Equation(listObj)
-	listPos = segment_getArrow(imgs)
+	listPos = segment_getArrow(imgsIn)
 
-	# Sample trajectory
-	# listPos = (
-	# 	(400,550),
-	# 	(300,500),
-	# 	(260,460), # 3
-	# 	(230,410),
-	# 	(210,360), # /
-	# 	(260,330), 
-	# 	(240,280), # 2
-	# 	(180,280),
-	# 	(100,290)  # =
-	# 	)
+	imgsOut = []
 
-	for p in listPos :
-		print(eq.newRobPos(p))
- 
+	for i,im in enumerate(imgsIn) :
+		eqTemp = eq.newRobPos(listPos[i])
+		imgTmp = draw_traj_on_pic(im, listPos[0:i+1])
+		imgsOut.append(write_text_on_pic(imgTmp, text = eqTemp, text_size = 100, text_pos = (10,10), text_color = 'red', 
+                      background_color = 'white', background_dim = [(0,0), (150,30)]))
+
+
+	video_export("out", imgsOut, "../data/out/png", "../data/out")
 
 if __name__ == '__main__':
 	main()
