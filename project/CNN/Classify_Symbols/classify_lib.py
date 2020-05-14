@@ -4,6 +4,7 @@
 
 import tarfile
 import os
+import gzip
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -47,7 +48,57 @@ from sklearn.decomposition import PCA
 #if cv2.__version__ != "4.1.2" :
 #  warnings.warn("OpenCV currently running version {}, developement version is 4.1.2".format(cv2.__version__))
 
+# FOR DIGITS CLASSIFICATION : 
 
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+
+#for data augmentation
+from skimage.transform import rotate
+from skimage.transform import warp
+from skimage.transform import SimilarityTransform
+
+# FOR KERAS :
+import keras
+#keras.__version__
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.utils import np_utils
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#======================================================================
+# 1) FUNCTIONS TO CLASSIFY DIGITS : '0' '1' '2' '3' '4' '5' '6' '7' '8'
+#======================================================================
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+def extract_data(filename, image_shape, image_number):
+    with gzip.open(filename) as bytestream:
+        bytestream.read(16)
+        buf = bytestream.read(np.prod(image_shape) * image_number)
+        data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
+        data = data.reshape(image_number, image_shape[0], image_shape[1])
+    return data
+
+
+def extract_labels(filename, image_number):
+    with gzip.open(filename) as bytestream:
+        bytestream.read(8)
+        buf = bytestream.read(1 * image_number)
+        labels = np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
+    return labels
+
+def vectImageArray(a) :
+    """ Transforms an array of images in a array of vectorised images """
+    return np.reshape(a, (a.shape[0],a.shape[1]*a.shape[2]))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#======================================================================
+# 2) FUNCTIONS TO CLASSIFY SYMBOLS : '+' '-' ':' '*' '='
+#======================================================================
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #======================================================================
 # To compute Fourier Descriptor
