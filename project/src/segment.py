@@ -201,6 +201,8 @@ def segment_getArrow(video):
     
     arrow_pos=np.zeros((len(video),2))
     i = 0
+    thr_min_2 = 0;
+    thr_min_1 = 0;
     for im in video:
         #ranges of y, u, v:
         # Y: 0 - 255
@@ -209,7 +211,18 @@ def segment_getArrow(video):
         img_yuv = cvtColor(im, cv2.COLOR_BGR2YUV);
         img_yuv = img_yuv[:,:,1];
         img_bin = np.zeros(video[0][:,:,0].shape);
-        thresh = filters.threshold_otsu(img_yuv)
+        
+        #selection of threshold with redundancy
+        if i==0:
+            thr_min_2 = thr_min_1 = thresh = threshold_otsu(img_yuv);
+        else:
+            thr_min_2 = thr_min_1;
+            thr_min_1 = thresh;
+            thr_mean = np.mean([thr_min_2, thr_min_1]);
+            thresh = threshold_otsu(img_yuv);
+            if abs(thresh-thr_mean)>5: #5 = empirically chosen threshold
+                thresh = thr_mean;
+        
         #print(thresh)
         img_bin[np.where(img_yuv>thresh)] = 1
 
