@@ -52,11 +52,13 @@ from sklearn.decomposition import PCA
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import StandardScaler
+from skimage.filters import threshold_otsu
 
 #for data augmentation
 from skimage.transform import rotate
 from skimage.transform import warp
 from skimage.transform import SimilarityTransform
+
 
 # FOR KERAS :
 import keras
