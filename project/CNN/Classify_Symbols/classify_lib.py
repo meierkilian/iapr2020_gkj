@@ -62,6 +62,8 @@ from skimage.transform import SimilarityTransform
 
 # FOR KERAS :
 import keras
+from keras.models import load_model
+
 #keras.__version__
 from keras.datasets import mnist
 from keras.models import Sequential
