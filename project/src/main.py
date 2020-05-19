@@ -71,9 +71,9 @@ def main():
 
 	imgsIn = video_load(inPath)
 
-	saveData(imgsIn)
+	# saveData(imgsIn)
 
-	return
+	
 	listObj = segment_getObj(imgsIn[0])
 	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
 	for i in range(len(listObj)) :

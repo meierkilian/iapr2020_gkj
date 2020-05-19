@@ -45,6 +45,9 @@ bgmExtent = (20, 20)
 #
 # If True intermediate images are displayed
 verbose = False
+#
+# Radius or red arrow (TODO estimate this param)
+arrowRad = 70
 
 def getObjCenter(img) :
     x = []
@@ -117,6 +120,14 @@ def segment_getObj(img) :
         if objSize[i] > maxSize or objSize[i] < minSize:
             markers[markers == i] = 0
 
+    # Removes arrow related objects
+    arrowPos = segment_getArrow([img])[0].astype(int)
+    for i in range(-arrowRad, arrowRad) :
+        for j in range(-arrowRad, arrowRad) :
+            x = np.clip(arrowPos[0] + i, 0, img.shape[0]-1)
+            y = np.clip(arrowPos[1] + j, 0, img.shape[1]-1)
+            markers[x,y] = 0
+
 
     # Adds label for background 
     markers = markers*2 # makes sure that label 1 is available for background marker
@@ -165,15 +176,21 @@ def segment_getObj(img) :
         if adjustSize :
             r = int(np.round(getObjRadius(labels == l, obj["pos"]))*border)
             imgResized = resize(cropCenter(np.multiply(labels == l, 1 - im_gray), obj["pos"], r), outputSize, preserve_range = True)
-            # try:
-            #     thresh = filters.threshold_otsu(imgResized)
-            # except Exception as e:
-            #     print("Caugth except {}".format(e))
+            try:
+                thresh = filters.threshold_otsu(imgResized)
+            except Exception as e:
+                print("Caugth except {}".format(e))
 
-            # obj["img"] = imgResized > thresh
-            obj["img"] = imgResized
+            obj["img"] = imgResized > thresh
+            # obj["img"] = imgResized
         else :
-            obj["img"] = cropCenter(np.multiply(labels == l, 1 - im_gray), obj["pos"], int(outputSize[0]/2))
+            imgResized = cropCenter(np.multiply(labels == l, 1 - im_gray), obj["pos"], int(outputSize[0]/2))
+            try:
+                thresh = filters.threshold_otsu(imgResized)
+            except Exception as e:
+                print("Caugth except {}".format(e))
+
+            obj["img"] = imgResized > thresh
 
         listObj.append(obj)
 
@@ -218,6 +235,30 @@ def segment_getArrow(video):
         cX = int(M["m01"] / M["m00"])
         arrow_pos[i,:] = [cX,cY];
         i = i+1
+
+        # fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(16, 8),
+        #                          sharex=True, sharey=True)
+        # ax = axes.ravel()
+
+        # ax[0].imshow(im)
+        # ax[0].set_title("Original")
+
+        # ax[1].imshow(img_yuv, cmap=plt.cm.gray, alpha=1)
+        # ax[1].set_title("YUV")
+
+        # ax[2].imshow(img_bin, cmap=plt.cm.gray, alpha=1)
+        # ax[2].set_title("Bin t = {}".format(thresh))
+        
+        # ax[3].imshow(im, alpha=1)
+        # ax[3].set_title("Other")
+        
+
+        # for a in axes:
+        #     a.axis('off')
+
+        # fig.tight_layout()
+        # plt.show()
+
 
     #print(arrow_pos) 
     if verbose :

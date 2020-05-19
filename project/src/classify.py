@@ -20,6 +20,8 @@ from skimage.measure import label     #
 from skimage.measure import perimeter #
 from skimage.segmentation import active_contour
 
+from random import choice
+
 #======================================================================
 #                 Functions : To compute Features
 #======================================================================
@@ -50,7 +52,12 @@ def get_contour(im, methode = "AC") :
 		snake = active_contour(im, init, alpha=4, beta=1, gamma=1,
 						   w_line = 0, w_edge = 2, coordinates='rc')   
 	elif methode == "CV2" : # --- Contour using OpenCV
-		contours, hierarchy = cv2.findContours(im,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+		if np.max(im) <= 1 :
+			imtmp = np.trunc(im*255)
+			imtmp = imtmp.astype('uint8')
+		else :
+			imtmp = im
+		contours, hierarchy = cv2.findContours(imtmp,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
 		c = np.array(contours[0])
 		snake = np.array([c[:,0,1],c[:,0,0]]).T  
 	else :
@@ -111,7 +118,8 @@ def compute_nb_objects(pic):
 #======================================================================
 
 def classify_getDigit(img, label):
-	return label
+	# return label
+	return choice('012345678')
 
 #======================================================================
 #            MAIN FUNCTION 2) : SYMBOL CLASSIFIER
