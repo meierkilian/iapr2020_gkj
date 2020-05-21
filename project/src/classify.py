@@ -13,17 +13,77 @@ import cv2 # tested using version 4.1.2
 
 # SKIMAGE FUNCTIONS : 
 from skimage.filters import median
-from skimage.morphology import disk  #
+from skimage.morphology import disk  
 from skimage.morphology import area_opening
-
-from skimage.measure import label     #
-from skimage.measure import perimeter #
+from skimage.measure import label     
+from skimage.measure import perimeter 
 from skimage.segmentation import active_contour
 
-from random import choice
+# KERAS LIB :
+import keras #maybe not necessary, not sure how to extract the "model.predic()" method. 
+from keras.models import load_model
 
 #======================================================================
-#                 Functions : To compute Features
+#            MAIN FUNCTION 1) : DIGIT CLASSIFIER
+#======================================================================
+
+def classify_getDigit(pic, model_path = 'CNN_model_V1.h5'):
+  """
+  Given a picture which represents a digit, return its digit.
+
+  => Input :    °)  pic :  - a 2D numpy binary picture of shape (28 x 28)
+                           - True = an element of the digit
+                           - False = background
+                °)  model_path :  - the path where the model file is stored
+                                  - Note : the path must also include the name of the model file itself
+
+  => Output :   °)  return a string caracter, either '0', '1', '2', '3', '4', '5', '6', '7' or '8'.
+  """
+  model = load_model(model_path) # 1) load the CNN model 
+  pic = pic.reshape((1,28,28,1)) # 2) reshape as a suitable form for the CNN model
+  the_pred = model.predict(pic)  # 3) make the prediction, which is of the form [ [0, 0, 0, 1, 0, 0, 0, 0, 0] ] for instance.
+  the_idx = np.where(the_pred[0] == np.amax(the_pred[0])) # 4) convert to a digit, for instance [ [3] ]
+  return str(int(the_idx[0]))    # 5) convert to a string caracter
+
+#======================================================================
+#            MAIN FUNCTION 2) : SYMBOL CLASSIFIER
+#======================================================================
+
+def classify_getSymbol( pic, path_classifier='symbol_classifier_V1.pk' ):
+	"""
+	Given a picture which represents a symbol, return its symbol.
+	
+	=> Input :    °)  pic :  - a 2D numpy binary picture of shape (28 x 28)
+							 - True = an element of the symbol
+							 - False = background
+				  °)  path_classifier :  - the path where the classifier file is stored
+										 - Note : the path must also include the name of the classifier file
+	
+	=> Output :   °)  return a string caracter, either '+', '-', '*', '=', ':'
+	"""
+	lda_model = pickle.load(open(path_classifier,'rb'))
+	features = np.zeros((1,3))
+	bend_the_knee_to_the_chosen_fourier_descriptor_feature = 5 #Heretics will burn.
+	features[0,0:2] = compute_nb_objects(pic)
+	features[0,2],_,_ = compute_feat_with_fourier_descriptor(pic, feat_n = bend_the_knee_to_the_chosen_fourier_descriptor_feature)
+	features[0,2]*=300 #lazy wait to not normalize the data
+	pred = lda_model.predict(features[:,1:3])
+
+	if features[0,0] == 3:   # 3 points in object => Divide symbol
+		return '/'
+	elif features[0,0] ==2:  # 2 points in object => '=' symbol
+		return '='
+	elif pred[0] == 1:       # 1 point in object => use lda classifier to decide between + , - ,* symbols
+		return '*'
+	elif pred[0] == 2:
+		return '+'
+	elif pred[0] == 3:
+		return '-'
+	else:
+		return 'STH WENT WRONG'
+
+#======================================================================
+#                 Functions : To compute the different features
 #======================================================================
 
 def get_contour(im, methode = "AC") :
@@ -112,48 +172,3 @@ def compute_nb_objects(pic):
 		
 	labels = label(pic)
 	return np.amax(labels), np.sum(labels==True)
-
-#======================================================================
-#            MAIN FUNCTION 1) : DIGIT CLASSIFIER
-#======================================================================
-
-def classify_getDigit(img, label):
-	# return label
-	return choice('012345678')
-
-#======================================================================
-#            MAIN FUNCTION 2) : SYMBOL CLASSIFIER
-#======================================================================
-
-def classify_getSymbol( pic, path_classifier='symbol_classifier_V1.pk' ):
-	"""
-	Given a picture which represents a symbol, return its symbol.
-	
-	=> Input :    °)  pic :  - a 2D numpy binary picture of shape (28 x 28)
-							 - True = an element of the symbol
-							 - False = background
-				  °)  path_classifier :  - the path where the classifier file is stored
-										 - Note : the path must also include the name of the classifier file
-	
-	=> Output :   °)  return a string caracter, either '+', '-', '*', '=', ':'
-	"""
-	lda_model = pickle.load(open(path_classifier,'rb'))
-	features = np.zeros((1,3))
-	bend_the_knee_to_the_chosen_fourier_descriptor_feature = 5 #Heretics will burn.
-	features[0,0:2] = compute_nb_objects(pic)
-	features[0,2],_,_ = compute_feat_with_fourier_descriptor(pic, feat_n = bend_the_knee_to_the_chosen_fourier_descriptor_feature)
-	features[0,2]*=300 #lazy wait to not normalize the data
-	pred = lda_model.predict(features[:,1:3])
-
-	if features[0,0] == 3:   # 3 points in object => Divide symbol
-		return '/'
-	elif features[0,0] ==2:  # 2 points in object => '=' symbol
-		return '='
-	elif pred[0] == 1:       # 1 point in object => use lda classifier to decide between + , - ,* symbols
-		return '*'
-	elif pred[0] == 2:
-		return '+'
-	elif pred[0] == 3:
-		return '-'
-	else:
-		return 'STH WENT WRONG'
