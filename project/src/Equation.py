@@ -1,5 +1,7 @@
 import numpy as np
 from classify import classify_getDigit, classify_getSymbol
+import matplotlib.pyplot as plt
+
 
 class Equation(object):
 	"""Keeps track of robot position an triggers symbol and digit classification when needd"""
@@ -37,12 +39,20 @@ class Equation(object):
 			if self.inside : #got inside
 				if self.prevDigit :
 					symb = classify_getSymbol(self.currentObj["img"])
+					# fig, ax = plt.subplots()
+					# ax.imshow(self.currentObj["img"])
+					# ax.set_title("Lbl : {}".format(symb))
+					# plt.show()
 					res = ''
-					if symb == '=' : res = str(eval(self.equ))
+					if symb == '=' : res = str(np.round(eval(self.equ),2))
 					self.equ = ''.join([self.equ, symb, res])
 					self.prevDigit = False
 				else :
 					self.equ = ''.join([self.equ, classify_getDigit(self.currentObj["img"], self.currentObj["label"])])
+					# fig, ax = plt.subplots()
+					# ax.imshow(self.currentObj["img"])
+					# ax.set_title("Lbl : {}".format(classify_getDigit(self.currentObj["img"], self.currentObj["label"])))
+					# plt.show()
 					self.prevDigit = True
 
 		return self.equ
