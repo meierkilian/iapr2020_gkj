@@ -1,29 +1,33 @@
 #!/usr/bin/python
 
-from video import *
+from video import video_init, video_load, video_showFrame, video_export
 from segment import *
 from Equation import *
 from overlay import *
 
 import sys
 import pickle
+import argparse
+import os
 
-inPath = ''
-outPath = ''
+# Global variable containing programme input parameters
+# args.input : input video
+# args.output : output video
+# args.verbose : bool 
+args = None
 
+def parsInput() :
+	global args
+	parser = argparse.ArgumentParser(description='Deliverable for IAPR 2020 project.')
 
-def parsInput():
-	global inPath
-	global outPath
+	defaultInput = os.path.join('..','data','robot_parcours_1.avi')
+	defaultOuput = os.path.join('..','data','out','robot_parcours_1_out.avi')
+	parser.add_argument('-i','--input', default=defaultInput, help='Input video clip, should be .avi')
+	parser.add_argument('-o','--output', default=defaultOuput, help='output video clip (path and name), should be .avi')
+	parser.add_argument('-v','--verbose', action='store_true', default=False, help='Makes processing verbose and displays intermediate figures (execution stops when a figure is open)')
 
-	if len(sys.argv) == 3 :
-		inPath = sys.argv[1]
-		outPath = sys.argv[2]
-	elif len(sys.argv) == 1 :
-		inPath = "../data/robot_parcours_1.avi"
-		outPath = "../data/robot_parcours_1_out.avi"
-	else :
-		raise ValueError("Bad input syntax, use : python3 main.py OR python3 main.py inPath outPath")
+	args = parser.parse_args()
+
 
 
 def saveData(imgs) :
@@ -69,7 +73,7 @@ def saveData(imgs) :
 def main():
 	parsInput()
 
-	imgsIn = video_load(inPath)
+	imgsIn = video_load(args.input)
 
 	# saveData(imgsIn)
 
@@ -95,7 +99,7 @@ def main():
                       background_color = 'white', background_dim = [(0,0), (150,30)]))
 
 
-	video_export("out", imgsOut, "../data/out/png", "../data/out")
+	video_export(args.output, imgsOut, False)
 
 if __name__ == '__main__':
 	main()

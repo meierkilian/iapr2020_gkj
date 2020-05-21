@@ -1,5 +1,4 @@
 labs/.ipynb_checkpoints/lab_03_classification-checkpoint.ipynb
 *.pyc
 *.avi
-project/data/out/*
 *.png
