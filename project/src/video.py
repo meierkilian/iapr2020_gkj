@@ -74,11 +74,10 @@ def video_export(output, imgs, savePng):
 	i = 0;
 	for im in imgs:
 		new_im = Image.fromarray(im)
-		new_im.save(png_path+"/"+"frame%.3d.png" % i)
+		new_im.save(os.path.join(png_path,"frame%.3d.png" % i))
 		i = i+1
 		
 	#Boucle pour sauver la vidéo
-	video_name = video_path+"/"+video_name+".avi"
 	freq = 2
 
 	listFrame = os.listdir(png_path)
@@ -87,7 +86,7 @@ def video_export(output, imgs, savePng):
 	frame = cv2.imread(os.path.join(png_path, images[0]))
 	height, width, layers = frame.shape
 
-	video = cv2.VideoWriter(video_name, 0, freq, (width,height))
+	video = cv2.VideoWriter(output, 0, freq, (width,height))
 
 	for image in images:
 		video.write(cv2.imread(os.path.join(png_path, image)))

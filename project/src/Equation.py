@@ -10,7 +10,7 @@ class Equation(object):
 	# listObj[i]["img"] = np.array() # 28x28 pixel binary
 
 
-	def __init__(self, listObj):
+	def __init__(self, listObj, args):
 		self.prevDigit = False
 		self.inside = False
 		self.currentObj = listObj[0]
@@ -19,6 +19,7 @@ class Equation(object):
 		self.listObj = listObj
 		self.areaInRad = 30 # max distance to symbol center to be considered over it
 		self.areaOutRad = self.areaInRad + 10 # min distance away from symbol to be conisderd outside (histeresis)
+		self.args = args
 
 
 	def newRobPos(self, pos):
@@ -48,7 +49,7 @@ class Equation(object):
 					self.equ = ''.join([self.equ, symb, res])
 					self.prevDigit = False
 				else :
-					self.equ = ''.join([self.equ, classify_getDigit(self.currentObj["img"], self.currentObj["label"])])
+					self.equ = ''.join([self.equ, classify_getDigit(self.currentObj["img"])])
 					# fig, ax = plt.subplots()
 					# ax.imshow(self.currentObj["img"])
 					# ax.set_title("Lbl : {}".format(classify_getDigit(self.currentObj["img"], self.currentObj["label"])))

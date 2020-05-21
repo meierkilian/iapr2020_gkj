@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 from video import video_init, video_load, video_showFrame, video_export
-from segment import *
-from Equation import *
-from overlay import *
+from segment import segment_getObj, segment_getArrow, segment_init
+from Equation import Equation
+from overlay import draw_traj_on_pic, write_text_on_pic
 
 import sys
 import pickle
@@ -69,25 +69,31 @@ def saveData(imgs) :
 	# 	listObj = pickle.load(dataFile)
 	# 	
 
-
-def main():
-	parsInput()
-
-	imgsIn = video_load(args.input)
-
-	# saveData(imgsIn)
-
-	
-	listObj = segment_getObj(imgsIn[0])
+# Used for testing
+def labelData(listObj) :
 	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
 	for i in range(len(listObj)) :
 			if i in lbl :
 				listObj[i]["label"] = lbl[i]
 			else :
 				listObj[i]["label"] = "N/A"
+	return listObj
+
+def main():
+	parsInput()
+	segment_init(args)
+	video_init(args)
 
 
-	eq = Equation(listObj)
+	imgsIn = video_load(args.input)
+
+	# saveData(imgsIn)
+
+	listObj = segment_getObj(imgsIn[0])
+	# listObj = labelData(listObj)
+
+
+	eq = Equation(listObj, args)
 	listPos = segment_getArrow(imgsIn)
 
 	imgsOut = []

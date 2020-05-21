@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 from skimage import morphology
-from skimage.segmentation import watershed
+from skimage.segmentation import watershed, random_walker
 from skimage.draw import rectangle
 from skimage.draw import circle
 from skimage.measure import label
@@ -14,6 +14,17 @@ from skimage.transform import resize
 import numpy as np
 import cv2
 from cv2 import cvtColor
+
+# Global variable containing programme input parameters
+# args.input : input video
+# args.output : output video
+# args.verbose : bool 
+args = None
+
+def segment_init(_args) :
+    global args
+    args = _args
+
 
 # TODO
 # im_gray = color.rgb2yuv(img)[:,:,1] NOTE red arrow is super nicely visible in this color space
@@ -42,9 +53,6 @@ adjustSize = False
 # Background marker offset and extent notes the position and size of the marker disignating the brackground
 bgmOffset = (0, 0)
 bgmExtent = (20, 20)
-#
-# If True intermediate images are displayed
-verbose = False
 #
 # Radius or red arrow (TODO estimate this param)
 arrowRad = 70
@@ -85,7 +93,6 @@ def segment_getObj(img) :
     # convert to grayscale
     im_gray = color.rgb2gray(img)
 
-    
     # First marker label approximation 
     thresh = filters.threshold_otsu(im_gray)
     markers = im_bin = im_gray < thresh
@@ -136,30 +143,52 @@ def segment_getObj(img) :
     
 
     # Perform the watershed
-    #edge = feature.canny(im_gray, sigma=.5)
-    edge = filters.sobel(im_gray)
+    # edge = feature.canny(im_gray, sigma=.5)
+    edge = filters.sobel(filters.median(im_gray))
+    # edgeC = filters.sobel(img)
+    # edge = color.rgb2gray(edgeC)
+    # edgeThresh = filters.threshold_otsu(edge)
+    # edge = edge > edgeThresh
+    # edge = morphology.skeletonize(edge)
+    # edge = morphology.binary_erosion(edge)
+
+    # edge = filters.scharr(im_gray)
+    # LoG = filters.difference_of_gaussians(im_gray, 2)
+    # edge = np.zeros(LoG.shape)
+    # edge[:-1,:] = edge[:-1,:] + (np.diff(np.sign(LoG.T)).T != 0)
+    # edge[:,:-1] = edge[:,:-1] + (np.diff(np.sign(LoG)) != 0)
+    # edge = np.diff(np.sign(LoG))  + np.diff(np.sign(LoG.T)).T
+    # edge = LoG/np.max(np.abs(LoG))
+    # LoG = cv2.Laplacian(im_gray, cv2.CV_8S)
+    # minLoG = cv2.morphologyEx(LoG, cv2.MORPH_ERODE, np.ones((2,2)))
+    # maxLoG = cv2.morphologyEx(LoG, cv2.MORPH_DILATE, np.ones((2,2)))
+    # edge = np.logical_or(np.logical_and(minLoG < 0,  LoG > 0), np.logical_and(maxLoG > 0, LoG < 0))
+
+    # edge = np.abs(LoG + 0.3) < 0.1
+
+    # labels = random_walker(edge, markers)    
     labels = watershed(edge, markers)    
     
-    if verbose :
+    if args.verbose :
         # display results
-        fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(16, 8),
+        fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(24, 12),
                                  sharex=True, sharey=True)
         ax = axes.ravel()
 
         ax[0].imshow(img)
         ax[0].set_title("Original")
 
-        ax[1].imshow(markers, cmap=plt.cm.nipy_spectral, alpha=1)
-        ax[1].set_title("Markers")
+        ax[1].imshow(edge, alpha=1)
+        ax[1].set_title("g Diff")
 
         ax[2].imshow(labels, cmap=plt.cm.nipy_spectral, alpha=1)
         ax[2].set_title("Segmented")
         
-        ax[3].imshow(im_gray, cmap=plt.cm.gray, alpha=1)
+        ax[3].imshow(edge, cmap=plt.cm.gray, alpha=1)
         ax[3].set_title("Other")
         
 
-        for a in axes:
+        for a in ax:
             a.axis('off')
 
         fig.tight_layout()
@@ -196,7 +225,7 @@ def segment_getObj(img) :
 
     
 
-    if verbose :
+    if args.verbose :
         fig, axes = plt.subplots(nrows=3, ncols=int(np.ceil(len(listObj)/3)), figsize=outputSize, \
         sharex=True, sharey=True)
 
@@ -231,12 +260,12 @@ def segment_getArrow(video):
         
         #selection of threshold with redundancy
         if i==0:
-            thr_min_2 = thr_min_1 = thresh = threshold_otsu(img_yuv);
+            thr_min_2 = thr_min_1 = thresh = filters.threshold_otsu(img_yuv);
         else:
             thr_min_2 = thr_min_1;
             thr_min_1 = thresh;
             thr_mean = np.mean([thr_min_2, thr_min_1]);
-            thresh = threshold_otsu(img_yuv);
+            thresh = filters.threshold_otsu(img_yuv);
             if abs(thresh-thr_mean)>5: #5 = empirically chosen threshold
                 thresh = thr_mean;
         
@@ -274,7 +303,7 @@ def segment_getArrow(video):
 
 
     #print(arrow_pos) 
-    if verbose :
+    if args.verbose :
         fig, ax = plt.subplots(1, 1, figsize=(12, 12))
         ax.set_xlim(0,720)
         ax.set_ylim(480,0)
