@@ -1,14 +1,16 @@
 #!/usr/bin/python
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from video import video_init, video_load, video_showFrame, video_export
-from segment import segment_getObj, segment_getArrow, segment_init
+from segment import Segment
 from Equation import Equation
 from overlay import draw_traj_on_pic, write_text_on_pic
 
 import sys
 import pickle
 import argparse
-import os
+
 
 # Global variable containing programme input parameters
 # args.input : input video
@@ -29,83 +31,36 @@ def parsInput() :
 	args = parser.parse_args()
 
 
-
-def saveData(imgs) :
-	listListObj = []
-	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
-
-	for i in range(6) :
-		print("Iteration {}".format(i))
-		listObj = segment_getObj(imgs[i])
-		print("Nbr obj {}".format(len(listObj)))
-		for i in range(len(listObj)) :
-			if i in lbl :
-				listObj[i]["label"] = lbl[i]
-			else :
-				listObj[i]["label"] = "N/A"
-
-
-		listListObj.append(listObj)
-
-		fig, axes = plt.subplots(nrows=3, ncols=int(np.ceil(len(listObj)/3)), figsize=outputSize, \
-		sharex=True, sharey=True)
-
-		axes = axes.ravel()
-		
-		for obj, ax in zip(listObj, axes) :
-			ax.imshow(obj["img"], cmap=plt.cm.gray)
-			ax.set_title("Center\n {}\n Lbl : {}".format(obj["pos"], obj["label"]))
-			
-		for a in axes:
-			a.axis('off')
-
-		plt.show()
-
-	
-	with open('../data/extractedImgBIG_Gray_withOUTSizeAdjust.data', 'wb') as dataFile:
-		pickle.dump(listListObj, dataFile)
-	# Can be loaded using pickle and the following lines
-	# with open('../data/extractedImg.data', 'rb') as dataFile:
-	# 	listObj = pickle.load(dataFile)
-	# 	
-
-# Used for testing
-def labelData(listObj) :
-	lbl = {0 : '2', 1 : '3', 1 : '3', 2 : '*', 3 : '=', 4 : '7', 5 : '7', 6 : '/', 7 : '2', 8 : '3', 9 : '+'}
-	for i in range(len(listObj)) :
-			if i in lbl :
-				listObj[i]["label"] = lbl[i]
-			else :
-				listObj[i]["label"] = "N/A"
-	return listObj
-
 def main():
 	parsInput()
-	segment_init(args)
-	video_init(args)
 
-
+	global args
 	imgsIn = video_load(args.input)
+	args.imgShape = imgsIn[0].shape
+	video_init(args) # Video module is initialized after first use since video_load is needed to get shape
+	print("INFO : Loading video done")
 
-	# saveData(imgsIn)
-
-	listObj = segment_getObj(imgsIn[0])
-	# listObj = labelData(listObj)
-
+	seg = Segment(args)
+	listObj = seg.getObj(imgsIn[0])
+	print("INFO : Digit and operator segmentation done")
 
 	eq = Equation(listObj, args)
-	listPos = segment_getArrow(imgsIn)
+
+	listPos = seg.getArrow(imgsIn)
+	print("INFO : Arrow segmentation done")
 
 	imgsOut = []
-
 	for i,im in enumerate(imgsIn) :
 		eqTemp = eq.newRobPos(listPos[i])
 		imgTmp = draw_traj_on_pic(im, listPos[0:i+1])
-		imgsOut.append(write_text_on_pic(imgTmp, text = eqTemp, text_size = 100, text_pos = (10,10), text_color = 'red', 
-                      background_color = 'white', background_dim = [(0,0), (150,30)]))
-
+		imgTmp = write_text_on_pic(imgTmp, text = "Frame {:02d} : {}".format(i,eqTemp), text_size = 150, text_pos = (10,10), text_color = 'red', 
+                      background_color = 'white', background_dim = [(0,0), (200,30)])
+		imgsOut.append(imgTmp)
+	print("INFO : Image overlay done")
 
 	video_export(args.output, imgsOut, False)
+	print("INFO : Video export done")
+	print("INFO : DONE")
 
 if __name__ == '__main__':
 	main()

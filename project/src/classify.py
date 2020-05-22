@@ -49,7 +49,7 @@ def classify_getDigit(pic, model_path = 'CNN_model_V1.h5'):
 #            MAIN FUNCTION 2) : SYMBOL CLASSIFIER
 #======================================================================
 
-def classify_getSymbol( pic, path_classifier='symbol_classifier_V1.pk' ):
+def classify_getSymbol( pic, path_classifier='symbol_classifier_V2.pk' ):
 	"""
 	Given a picture which represents a symbol, return its symbol.
 	
