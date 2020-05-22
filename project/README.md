@@ -47,6 +47,8 @@ usage: main.py \[-h\] \[-i INPUT\] \[-o OUTPUT\] \[-v\]
 Deliverable for IAPR 2020 project.
 
 optional arguments:
+| Short     | Long            | Description                                                                                        |
+|-----------|-----------------|----------------------------------------------------------------------------------------------------|
 | -h        | --help          | Show this help message and exit                                                                    |
 | -i INPUT  | --input INPUT   | Input video clip, should be .avi                                                                   |
 | -o OUTPUT | --output OUTPUT | Output video clip (path and name), should be .avi                                                  |
