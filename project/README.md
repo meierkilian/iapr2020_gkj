@@ -43,7 +43,7 @@ Assuming conda and git are already installed, tested on linux but should work on
 
 ## Usage
 ```
-main.py \[-h\] \[-i INPUT\] \[-o OUTPUT\] \[-v\]
+main.py [-h] [-i INPUT] [-o OUTPUT] [-v]
 ```
 
 optional arguments:
