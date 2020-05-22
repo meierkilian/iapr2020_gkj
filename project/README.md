@@ -19,15 +19,25 @@ This repository has be created to contain the final version of the project reali
 Assuming conda and git are already installed, tested on linux but should work on other OS if paths are adpated.
 
 1. Download the repository
-	```git clone https://github.com/meierkilian/iapr2020_gkj.git```
+	```
+	git clone https://github.com/meierkilian/iapr2020_gkj.git
+	```
 2. Go in the repository
-	```cd team31```
+	```
+	cd team31
+	```
 3. Install the conda environement
-	```conda env create -f env/environment.yml```
+	```
+	conda env create -f env/environment.yml
+	```
 4. Activate the conda environement 
-	```conda activate iapr2020_team31```
+	```
+	conda activate iapr2020_team31
+	```
 5. Test installation, the help info should be displayed
-	```python src/main.py -h```
+	```
+	python src/main.py -h
+	```
 6. Done
 
 
@@ -38,7 +48,6 @@ Deliverable for IAPR 2020 project.
 
 optional arguments:
 | -h        | --help          | Show this help message and exit                                                                    |
-|-----------|-----------------|----------------------------------------------------------------------------------------------------|
 | -i INPUT  | --input INPUT   | Input video clip, should be .avi                                                                   |
 | -o OUTPUT | --output OUTPUT | Output video clip (path and name), should be .avi                                                  |
 | -v        | --verbose       | Makes processing verbose and displays intermediate figures (execution stops when a figure is open) |
