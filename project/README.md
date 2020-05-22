@@ -13,7 +13,7 @@ This repository has be created to contain the final version of the project reali
 * **handin** : contains project presentation and software callgraph (used to have a overview of the software)
 * **handout** : contains original project desription
 * **src** : contains source code, in particular the main.py which is the program entry
-* **README**.md : this file
+* **README.md** : this file
 
 ## Installation
 Assuming conda and git are already installed, tested on linux but should work on other OS if paths are adpated.
@@ -42,9 +42,9 @@ Assuming conda and git are already installed, tested on linux but should work on
 
 
 ## Usage
-usage: main.py \[-h\] \[-i INPUT\] \[-o OUTPUT\] \[-v\]
-
-Deliverable for IAPR 2020 project.
+```
+main.py \[-h\] \[-i INPUT\] \[-o OUTPUT\] \[-v\]
+```
 
 optional arguments:
 | Short     | Long            | Description                                                                                        |
